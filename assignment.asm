@@ -1,6 +1,18 @@
-
-
-
+// code for find sorted pos
+	find: ADDI X4 XZR #0
+	fillLoop: 
+	LSL X6 X4 #3
+	ADD X5 X0 X6
+	LDUR X5 [X5 #0]
+	CMP X5 X1
+	BLT.endLoop
+	ADDI X4 X4 #1
+	
+	CMP X4 X2
+	BLT.fillLoop
+	
+	endLoop: ADDI X0 X4 #0
+	BR
 
 //code for shift right
 	shift: ADD X3 X0 X1
