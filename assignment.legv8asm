@@ -1,15 +1,13 @@
 //code for main
-	
         ADDI X0, XZR, #100 //address 100
 	ADDI X1, XZR, #200 // 25 elements 8 bytes each
-	
 
-	B fill
+	BL fill
 	
 	ADDI X0, XZR, #100 //address 100
 	ADDI X1, XZR, #200 // 25 elements 8 bytes each
 
-	B sort
+	BL sort
 	
 	B end
 
@@ -21,13 +19,12 @@
 	ADDI X1, X10, #0 // arg2  = i
 	ADDI X2, X11, #0 // arg3 = length -1
 	ADDI X15, X30, #0 // saves link register
-	sortLoop:
-	B insert //calls function
+	sortLoop: BL insert //calls function 
 	ADDI X0, X12, #0 // arg1 = start of array
 	ADDI X10, X10, #1 // i = i + 1
 	ADDI X1, X10, #0 // arg2 = i
 	ADDI X2, X11, #0 // arg3 = length - 1 
-	SUBS X22, X10, X11 // used to set flags
+	SUBS X22, X10, X11 // i < length -1
 	B.LT sortLoop // goes back
 	ADDI X30, X15, #0 // resets link register
 	BR X30  // goes back
@@ -37,25 +34,25 @@
 // code for insert sorted pos
 	 
 	 insert: ADD X3, X0, X1 //X3 = end of array
-	 ADDI X15, X30, #0 //saves link register
-	 ADDI X9, X2, #0 // saves end of array to X9
-	 ADDI X10, X0, #0 // saves Arg1 to X10
+	 ADDI X20, X30, #0 //saves link register
+	 ADDI X21, X2, #0 // saves end of array to X9
+	 ADDI X19, X0, #0 // saves Arg1 to X10
 	 LDUR X1, [X3, #0] //Arg2 = *(end of array)
-	 ADDI X12, X1, #0 // Saves X1
-	 B find // calls find
-	 ADDI X11, X0, #0 //saves result from find to X11
+	 ADDI X22, X1, #0 // Saves X1
+	 BL find // calls find
+	 ADDI X23, X0, #0 //saves result from find to X11
 	 ADDI X1, X0, #0
-	 ADDI X0, X10, #0 // Arg0  = beginning of array
-	 ADDI X2, X9, #0 // Arg2 = final Index
-	 B shift // calls function
-	 ADD X0, X10, X11 //X0 = array start + result of find
-	 STUR X12, [X0, #0] // stores passed argument into correct slot
-	 ADDI  X30, X15, #0 // resets link register
+	 ADDI X0, X19, #0 // Arg0  = beginning of array
+	 ADDI X2, X21, #0 // Arg2 = final Index
+	 BL shift // calls function
+	 ADD X0, X19, X23 //X0 = array start + result of find
+	 STUR X22, [X0, #0] // stores passed argument into correct slot
+	 ADDI  X30, X20, #0 // resets link register
 	 BR X30 //returns
 
 // code for find sorted pos
 	find: ADDI X4, XZR, #0 // i = 0
-	fillLoop: 
+	findLoop: 
 	LSL X6, X4, #3 // X6 = i * 8 
 	ADD X5, X0, X6 // X5 gets the indesx of the ith elemnt of the array
 	LDUR X5, [X5, #0] // X5 gets the element value from the array
@@ -64,7 +61,7 @@
 	ADDI X4, X4, #1 // i = i + 1
 	
 	SUBS X8, X4, X2 //only used to set flags
-	B.LT fillLoop //loops
+	B.LT findLoop //loops
 	
 	endLoop: ADDI X0, X4, #0 //sets up return value
 	BR X30
@@ -78,16 +75,15 @@
 	ADD X3, X0, X1// X3 now points to address at new X1
 	LDUR X5, [X3, #0] //store the value at the new X3
 	STUR X4, [X3, #0] // old X3 gets put in the slot of new X3
-	ADDI X3, X5, #0 // X3 gets the value that used to be at the X3 pos
-	
+	ADDI X3, X5, #0 // X3 gets the value that used to be at the X3 pos	
 	SUBS X6, X1, X2 //only used to set flags
-	B.NE shiftLoop // loops if the index inse't at the the end
+	B.LT shiftLoop // loops if the index inse't at the the end
 	BR X30  // goes back
 
 
 //code for "fill" function
 	fill: ADDI X2, X0, #0 // X2 is now start of array
-	ADD X1, X0, X1 // X1 is end of array
+	
 	fillLoop:
 	//calculates length - i
 	SUB X4, X1, X0 // X4 is end of array
@@ -98,8 +94,7 @@
 	ADDI X2, X2, #8 //i = i + 1
 	
 	SUBS X6, X2, X1 //only used to set flags
-	B.NE fillLoop // if X2 is not the end of the array loop
+	B.LT fillLoop // if X2 is not the end of the array loop
 	BR X30 // go back
 	
 	end:
-	
