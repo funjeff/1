@@ -3,11 +3,20 @@
 	ADDI X1, XZR, #200 // 25 elements 8 bytes each
 
 	BL fill
+
+	BL print
 	
 	ADDI X0, XZR, #100 //address 100
 	ADDI X1, XZR, #200 // 25 elements 8 bytes each
 
 	BL sort
+	
+	PRNL	
+
+	ADDI X0, XZR, #100 //address 100
+	ADDI X1, XZR, #200 // 25 elements 8 bytes each
+
+	BL print
 	
 	B end
 
@@ -50,17 +59,23 @@
 	 ADDI  X30, X20, #0 // resets link register
 	 BR X30 //returns
 
-// code for find sorted pos
+// code for find sorted pos //pretty sure this works just fine
 	find: ADDI X4, XZR, #0 // i = 0
 	findLoop: 
+	
 	LSL X6, X4, #3 // X6 = i * 8 
+	
 	ADD X5, X0, X6 // X5 gets the indesx of the ith elemnt of the array
 	LDUR X5, [X5, #0] // X5 gets the element value from the array
+	
 	SUBS X8, X5, X1 // only used to set flags
 	B.LT endLoop //breaks if need be
-	ADDI X4, X4, #1 // i = i + 1
 	
-	SUBS X8, X4, X2 //only used to set flags
+	ADDI X4, X4, #1 // i = i + 1
+
+
+	
+	SUBS X8, X6, X2 //only used to set flags
 	B.LT findLoop //loops
 	
 	endLoop: ADDI X0, X4, #0 //sets up return value
@@ -81,19 +96,36 @@
 	BR X30  // goes back
 
 
+//code to print array
+	print: ADDI X2, X0, #0 // X2 is now start of array
+	ADD X5, X1, X0	
+
+	printLoop:
+	//calculates length - i
+	
+	LDUR X4, [X2, #0] // store the value of length - 1 to the array
+	ADDI X2, X2, #8 //i = i + 1
+	PRNT X4
+
+	SUBS X6, X2, X7 //only used to set flags
+	B.LT printLoop // if X2 is not the end of the array loop
+	BR X30 // go back
+	
+
 //code for "fill" function
 	fill: ADDI X2, X0, #0 // X2 is now start of array
+	ADD X7, X0, X1
 	
 	fillLoop:
 	//calculates length - i
-	SUB X4, X1, X0 // X4 is end of array
+	SUB X4, X7, X0 // X4 is end of array
 	SUB X5, X2, X0 // X5 amount of the array incremented
 	SUB X4, X4, X5 // X4 is the length - 1
 	
 	STUR X4, [X2, #0] // store the value of length - 1 to the array
 	ADDI X2, X2, #8 //i = i + 1
 	
-	SUBS X6, X2, X1 //only used to set flags
+	SUBS X6, X2, X7 //only used to set flags
 	B.LT fillLoop // if X2 is not the end of the array loop
 	BR X30 // go back
 	
