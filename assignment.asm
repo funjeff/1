@@ -1,3 +1,48 @@
+//code for main
+	
+	
+
+
+//code for insertion sort 
+
+	sort: ADDI X10 XZR #1
+	ADDI X12 X0 #0
+	SUBI X11 X1 #1
+	ADDI X1 X10 #0
+	ADDI X2 X11 #0
+	ADDI X15 X30 #0
+	sortLoop:
+	B.insert
+	ADDI X0 X12 #0
+	ADDI X10 X10 #1
+	ADDI X1 X10 #0
+	ADDI X3 X11 #0
+	CMP X10 X11
+	BLT.sortLoop
+	ADD X30 X15 #0
+	BR
+
+
+
+// code for insert sorted pos
+	 
+	 insert: ADD X3 X0 X1
+	 ADDI X15 X30 #0
+	 ADDI X9 X2 #0
+	 ADDI X10 X0 #0
+	 LDUR X1 [X3 #0]
+	 ADDI X12 [X1 #0]
+	 B.find
+	 ADDI X11 X0 #0
+	 ADDI X1 X0 #0
+	 ADDI X0 X10 #0
+	 ADDI X2 X9 #0
+	 B.shift
+	 ADDI X0 X10 X11
+	 STUR X12 [X0 #0]
+	 ADDI X30 X15 #0
+	 BR
+
 // code for find sorted pos
 	find: ADDI X4 XZR #0
 	fillLoop: 
