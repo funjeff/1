@@ -22,15 +22,17 @@
 
 //code for insertion sort 
 
-	sort: ADDI X10, XZR, #1 //i = 1
-	ADDI  X12, X0, #0 // x12 = start of araay
-	SUBI X11, X1, #1 // X11 = length -1
+	
+	sort: ADDI X10, XZR, #0 //i = 8
+
+	ADDI X12, X0, #0 // x12 = start of araay
+	SUBI X11, X1, #8 // 
 	ADDI X1, X10, #0 // arg2  = i
 	ADDI X2, X11, #0 // arg3 = length -1
 	ADDI X15, X30, #0 // saves link register
 	sortLoop: BL insert //calls function 
 	ADDI X0, X12, #0 // arg1 = start of array
-	ADDI X10, X10, #1 // i = i + 1
+	ADDI X10, X10, #8 // i = i + 8
 	ADDI X1, X10, #0 // arg2 = i
 	ADDI X2, X11, #0 // arg3 = length - 1 
 	SUBS X22, X10, X11 // i < length -1
@@ -42,14 +44,14 @@
 
 // code for insert sorted pos
 	 
-	 insert: ADD X3, X0, X1 //X3 = end of array
+	 insert: ADD X3, X0, X1 //X3 = array at pos
 	 ADDI X20, X30, #0 //saves link register
-	 ADDI X21, X2, #0 // saves end of array to X9
-	 ADDI X19, X0, #0 // saves Arg1 to X10
-	 LDUR X1, [X3, #0] //Arg2 = *(end of array)
-	 ADDI X22, X1, #0 // Saves X1
+	 ADDI X21, X2, #0 // saves end of array to X21
+	 ADDI X19, X0, #0 // saves Arg1 to X19
+	 LDUR X22,[X3, #0] // pull the unsorted value out of its current pos	
+	 ADDI X1, X22, #0 //Arg2 = value at pos
 	 BL find // calls find
-	 ADDI X23, X0, #0 //saves result from find to X11
+	 ADDI X23, X0, #0 //saves result from find to X23
 	 ADDI X1, X0, #0
 	 ADDI X0, X19, #0 // Arg0  = beginning of array
 	 ADDI X2, X21, #0 // Arg2 = final Index
@@ -63,13 +65,14 @@
 	find: ADDI X4, XZR, #0 // i = 0
 	findLoop: 
 	
-	LSL X6, X4, #3 // X6 = i * 8 
+		
 	
+	LSL X6, X4, #3 // X6 = i * 8 
 	ADD X5, X0, X6 // X5 gets the indesx of the ith elemnt of the array
 	LDUR X5, [X5, #0] // X5 gets the element value from the array
-	
 	SUBS X8, X5, X1 // only used to set flags
-	B.LT endLoop //breaks if need be
+	B.GE endLoop //breaks if need be
+	
 	
 	ADDI X4, X4, #1 // i = i + 1
 
@@ -78,7 +81,7 @@
 	SUBS X8, X6, X2 //only used to set flags
 	B.LT findLoop //loops
 	
-	endLoop: ADDI X0, X4, #0 //sets up return value
+	endLoop: ADDI X0, X6, #0 //sets up return value
 	BR X30
 
 //code for shift right
