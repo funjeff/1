@@ -6,8 +6,12 @@
 
 	BL print
 	
+	
 	ADDI X0, XZR, #100 //address 100
+//	ADDI X2, XZR, #176// 25 elements 8 bytes each
 	ADDI X1, XZR, #200 // 25 elements 8 bytes each
+	
+//	BL shift	
 
 	BL sort
 	
@@ -23,19 +27,23 @@
 //code for insertion sort 
 
 	
-	sort: ADDI X10, XZR, #0 //i = 8
+	sort: ADDI X10,X1,#0 //i = array length
 
 	ADDI X12, X0, #0 // x12 = start of araay
-	SUBI X11, X1, #8 // 
+	ADD X10, X12, X10	
+	SUBI X11, X1, #0 // 
 	ADDI X1, X10, #0 // arg2  = i
 	ADDI X2, X11, #0 // arg3 = length -1
 	ADDI X15, X30, #0 // saves link register
+	
 	sortLoop: BL insert //calls function 
+	
 	ADDI X0, X12, #0 // arg1 = start of array
-	ADDI X10, X10, #8 // i = i + 8
+	SUBI X10, X10, #8 // i = i - 8
 	ADDI X1, X10, #0 // arg2 = i
 	ADDI X2, X11, #0 // arg3 = length - 1 
 	SUBS X22, X10, X11 // i < length -1
+	
 	B.LT sortLoop // goes back
 	ADDI X30, X15, #0 // resets link register
 	BR X30  // goes back
@@ -49,22 +57,28 @@
 	 ADDI X21, X2, #0 // saves end of array to X21
 	 ADDI X19, X0, #0 // saves Arg1 to X19
 	 LDUR X22,[X3, #0] // pull the unsorted value out of its current pos	
+	 PRNT X22
+
 	 ADDI X1, X22, #0 //Arg2 = value at pos
+	 ADDI X25, X3, #0 //save value of X3
+	
 	 BL find // calls find
+	 
 	 ADDI X23, X0, #0 //saves result from find to X23
 	 ADDI X1, X0, #0
 	 ADDI X0, X19, #0 // Arg0  = beginning of array
-	 ADDI X2, X21, #0 // Arg2 = final Index
+
 	 BL shift // calls function
 	 ADD X0, X19, X23 //X0 = array start + result of find
 	 STUR X22, [X0, #0] // stores passed argument into correct slot
-	 ADDI  X30, X20, #0 // resets link register
+ 	 ADDI  X30, X20, #0 // resets link register
 	 BR X30 //returns
 
 // code for find sorted pos //pretty sure this works just fine
 	find: ADDI X4, XZR, #0 // i = 0
-	findLoop: 
+
 	
+	findLoop: 
 		
 	
 	LSL X6, X4, #3 // X6 = i * 8 
@@ -78,25 +92,37 @@
 
 
 	
-	SUBS X8, X6, X2 //only used to set flags
-	B.LT findLoop //loops
+//	SUBS X8, X6, X2 //only used to set flags
+	B findLoop //loops
 	
 	endLoop: ADDI X0, X6, #0 //sets up return value
 	BR X30
 
 //code for shift right
-	shift: ADD X3, X0, X1 //X3 = element at "pos"
-	LDUR X3, [X3, #0] // X3 now gets the value of element at "pos"
+	shift: ADD X3, X0, X1 //X3 = element at "pos"	
+	
+//	ADDI X3, X3, #8	
+	
+	ADD X2, X2, X0	
+
+	LDUR X3, [X3, #0] // X3 now gets the value of element at "pos" 	
+
 	shiftLoop: ADDI X1, X1, #8 // pos = pos + 8
+	
+	SUBS X6, X1, X2 //only used to set flags
+	
+	B.LT quickend
 	
 	ADDI X4, X3, #0 //X4 gets X3
 	ADD X3, X0, X1// X3 now points to address at new X1
 	LDUR X5, [X3, #0] //store the value at the new X3
 	STUR X4, [X3, #0] // old X3 gets put in the slot of new X3
 	ADDI X3, X5, #0 // X3 gets the value that used to be at the X3 pos	
-	SUBS X6, X1, X2 //only used to set flags
-	B.LT shiftLoop // loops if the index inse't at the the end
+	B shiftLoop // loops if the index inse't at the the end
 	BR X30  // goes back
+
+	quickend:
+	BR X30
 
 
 //code to print array
@@ -110,7 +136,7 @@
 	ADDI X2, X2, #8 //i = i + 1
 	PRNT X4
 
-	SUBS X6, X2, X7 //only used to set flags
+	SUBS X6, X2, X5 //only used to set flags
 	B.LT printLoop // if X2 is not the end of the array loop
 	BR X30 // go back
 	
