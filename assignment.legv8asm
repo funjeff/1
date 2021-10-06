@@ -42,28 +42,27 @@
 	SUBI X10, X10, #8 // i = i - 8
 	ADDI X1, X10, #0 // arg2 = i
 	ADDI X2, X11, #0 // arg3 = length - 1 
-	SUBS X22, X10, X11 // i < length -1
+	SUBS X22, X10, X12 // i < length -1
 	
-	B.LT sortLoop // goes back
+	B.GT sortLoop // goes back
 	ADDI X30, X15, #0 // resets link register
 	BR X30  // goes back
 
 
 
 // code for insert sorted pos
-	 
-	 insert: ADD X3, X0, X1 //X3 = array at pos
-	 ADDI X20, X30, #0 //saves link register
+	  
+	 insert: 
+ 	 ADDI X20, X30, #0 //saves link register
 	 ADDI X21, X2, #0 // saves end of array to X21
 	 ADDI X19, X0, #0 // saves Arg1 to X19
-	 LDUR X22,[X3, #0] // pull the unsorted value out of its current pos	
-	 PRNT X22
+	 LDUR X22,[X1, #0] // pull the unsorted value out of its current pos	 
 
 	 ADDI X1, X22, #0 //Arg2 = value at pos
-	 ADDI X25, X3, #0 //save value of X3
 	
 	 BL find // calls find
-	 
+	
+
 	 ADDI X23, X0, #0 //saves result from find to X23
 	 ADDI X1, X0, #0
 	 ADDI X0, X19, #0 // Arg0  = beginning of array
@@ -79,7 +78,6 @@
 
 	
 	findLoop: 
-		
 	
 	LSL X6, X4, #3 // X6 = i * 8 
 	ADD X5, X0, X6 // X5 gets the indesx of the ith elemnt of the array
@@ -104,8 +102,6 @@
 //	ADDI X3, X3, #8	
 	
 	ADD X2, X2, X0	
-
-	LDUR X3, [X3, #0] // X3 now gets the value of element at "pos" 	
 
 	shiftLoop: ADDI X1, X1, #8 // pos = pos + 8
 	
